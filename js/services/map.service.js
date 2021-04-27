@@ -35,6 +35,7 @@ function addMarker(loc,title) {
 
 function panTo(lat, lng) {
     var laLatLng = new google.maps.LatLng(lat, lng);
+    console.log('laLatLng',laLatLng);
     gMap.panTo(laLatLng);
 }
 

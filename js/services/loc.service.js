@@ -14,9 +14,9 @@ function createLocations() {
     var locs = storageService.loadFromStorage(LOCKEY);
     if (!locs || locs.length === 0) {
         locs = [
-            createLocation('London', 51.516169, -0.125339, 0, Date.now(), 0),
-            createLocation('Bangkok', 13.745204, 100.510569, 0, Date.now(), 0),
-            createLocation('Reykjavik', 64.145178, -21.943076, 0, Date.now(), 0),
+            createLocation('London', 51.516169, -0.125339, 0, 0),
+            createLocation('Bangkok', 13.745204, 100.510569, 0, 0),
+            createLocation('Reykjavik', 64.145178, -21.943076, 0, 0),
         ];
     }
     gLocs = locs;
@@ -29,7 +29,7 @@ function createLocation(name, lat, lng, weather = 25, updatedAt = 0) {
         lat,
         lng,
         weather,
-        createdAt: Date.now(),
+        createdAt: new Date(Date.now()).toLocaleString(),
         updatedAt
     }
     return newLoc;
@@ -51,7 +51,7 @@ function removeLoc(id) {
     const locIdx = gLocs.findIndex(loc => {
         return loc.id === id;
     })
-    gLocs.splice(locIdx,1);
+    gLocs.splice(locIdx, 1);
     storageService.saveToStorage(LOCKEY, gLocs);
 }
 

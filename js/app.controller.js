@@ -7,6 +7,7 @@ var gUserCurrLoc = {
     lat: 0,
     lng: 0
 }
+
 function onInit() {
     addEventListenrs();
     mapService.initMap()
@@ -48,7 +49,7 @@ function addEventListenrs() {
 
 }
 function onSearchAdress(map) {
-    console.log('then geoCode');
+    // console.log('then geoCode');
     const geocoder = new google.maps.Geocoder();
     document.querySelector(".submit-address").addEventListener("click", () => {
         geocodeAddress(geocoder, map);
@@ -60,14 +61,17 @@ function geocodeAddress(geocoder, resultsMap) {
     geocoder.geocode({ address: address }, (results, status) => {
         if (status === "OK") {
             resultsMap.setCenter(results[0].geometry.location);
+
+
             new google.maps.Marker({
                 map: resultsMap,
                 position: results[0].geometry.location,
+
             });
         } else {
             alert("Geocode was not successful for the following reason: " + status);
         }
-        // onAddLoc(lat,lng,adress)
+        onAddLoc(address, results[0].geometry.location.lat(), results[0].geometry.location.lng());
     });
 }
 
@@ -77,10 +81,9 @@ function mapClickedEv(map) {
         var longtitude = mapsMouseEvent.latLng.lng();
         gUserCurrLoc.lat = latitude;
         gUserCurrLoc.lng = longtitude;
-        console.log('gUserCurrLoc[lat]', gUserCurrLoc.lat, 'gUserCurrLoc[lng]', gUserCurrLoc.lng);
     });
 }
-function onRemoveLoc(ev){
+function onRemoveLoc(ev) {
     locService.removeLoc(ev.target.getAttribute('data-i'))
     locService.getLocs()
         .then(locs => {
@@ -108,20 +111,26 @@ function renderLocations(locs) {
     document.querySelector('.locs').innerHTML = strHtmls.join('');
     [...document.querySelectorAll('.btn-go')].forEach((item) => {
         item.addEventListener('click', (ev) => {
-            onGoToLoc(ev);            
+            onGoToLoc(ev);
         })
     });
 
     [...document.querySelectorAll('.btn-remove')].forEach((item) => {
         item.addEventListener('click', (ev) => {
-            onRemoveLoc(ev);            
+            onRemoveLoc(ev);
         })
     })
 }
 
 
 function onGoToLoc(ev) {
-    mapService.panTo(ev.target.getAttribute('data-lat'), ev.target.getAttribute('data-lng'));
+    const locLat = ev.target.getAttribute('data-lat');
+    const locLng = ev.target.getAttribute('data-lng');
+    console.log(locLat,locLng);
+    
+    mapService.panTo(locLat, locLng);
+    mapService.addMarker({ lat: +locLat, lng: +locLng })
+
 }
 
 // This function provides a Promise API to the callback-based-api of getCurrentPosition
