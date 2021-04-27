@@ -3,7 +3,10 @@ import { mapService } from './services/map.service.js'
 
 window.onload = onInit;
 // var gMap;
-
+var gUserCurrLoc = {
+    lat: 0,
+    lng: 0
+}
 function onInit() {
     addEventListenrs();
     mapService.initMap()
@@ -11,33 +14,34 @@ function onInit() {
             mapClickedEv(map);
             // gMap = map;
         })
-        .catch(() => console.log('Error: cannot init map'))
+        .catch(() => console.log('Error: cannot init map'));
+    locService.getLocs()
+        .then(locs => {
+            renderLocations(locs)
+        })
 }
-function mapClickedEv(map){
+function mapClickedEv(map) {
     map.addListener("click", (mapsMouseEvent) => {
-        console.log('Map is mapIsClicked');
-        var lat = mapsMouseEvent.latLng.lat();
-        var lng = mapsMouseEvent.latLng.lng();
-        console.log(lat, lng);
+        var latitude = mapsMouseEvent.latLng.lat();
+        var longtitude = mapsMouseEvent.latLng.lng();
+        gUserCurrLoc.lat = latitude;
+        gUserCurrLoc.lng = longtitude;
+        console.log('gUserCurrLoc[lat]', gUserCurrLoc.lat, 'gUserCurrLoc[lng]', gUserCurrLoc.lng);
     });
 }
 function addEventListenrs() {
     document.querySelector('.btn-pan').addEventListener('click', (ev) => {
         console.log('Panning the Map');
-        mapService.panTo(35.69103054930886, 139.77040508554606);
+        mapService.panTo(35.6798391, 139.7674084);
     })
     document.querySelector('.btn-add-marker').addEventListener('click', (ev) => {
         console.log('Adding a marker');
-        mapService.addMarker({ lat: 32.0749831, lng: 34.9120554 });
+        mapService.addMarker({ lat: gUserCurrLoc.lat, lng: gUserCurrLoc.lng }, prompt('Enter place name'));
     })
-    document.querySelector('.btn-get-locs').addEventListener('click', (ev) => {
-        locService.getLocs()
-            .then(locs => {
-                console.log('Locations:', locs)
-                document.querySelector('.locs').innerText = JSON.stringify(locs)
-            })
+    // document.querySelector('.btn-get-locs').addEventListener('click', (ev) => {
 
-    })
+
+    // })
     document.querySelector('.btn-user-pos').addEventListener('click', (ev) => {
         getPosition()
             .then(pos => {
@@ -51,7 +55,19 @@ function addEventListenrs() {
             })
     })
 }
-
+function renderLocations(locs) {
+    const strHtmls = locs.map(loc => {
+        return `<tr>
+        <td>${loc.name}</td>
+        <td>${loc.weather}</td>
+        <td>${loc.createdAt}</td>
+        <td><button class="btn-go" data-i="${loc.id}">Go</button></td>
+        <td><button class="btn-go" data-i="${loc.id}">✖</button></td>
+      </tr>`
+    })
+    console.log(strHtmls);
+    document.querySelector('.locs').innerHTML = strHtmls.join('');
+}
 
 // This function provides a Promise API to the callback-based-api of getCurrentPosition
 function getPosition() {
