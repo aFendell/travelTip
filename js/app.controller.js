@@ -42,6 +42,7 @@ function geocodeAddress(geocoder, resultsMap) {
         } else {
             alert("Geocode was not successful for the following reason: " + status);
         }
+        // onAddLoc(lat,lng,adress)
     });
 }
 
@@ -54,6 +55,9 @@ function mapClickedEv(map) {
         console.log('gUserCurrLoc[lat]', gUserCurrLoc.lat, 'gUserCurrLoc[lng]', gUserCurrLoc.lng);
     });
 }
+// function onAddLoc(lat,lng,adress){
+//     locService.addLocation()
+// }
 
 function addEventListenrs() {
     document.querySelector('.btn-pan').addEventListener('click', (ev) => {
