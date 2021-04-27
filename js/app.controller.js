@@ -22,6 +22,31 @@ function onInit() {
         })
 }
 
+function addEventListenrs() {
+    // document.querySelector('.btn-pan').addEventListener('click', (ev) => {
+    //     console.log('Panning the Map');
+    //     mapService.panTo(35.6798391, 139.7674084);
+    // })
+    document.querySelector('.btn-add-loc').addEventListener('click', (ev) => {
+        console.log('Adding a marker');
+        const title = prompt('Enter place name');
+        mapService.addMarker({ lat: gUserCurrLoc.lat, lng: gUserCurrLoc.lng }, title);
+        onAddLoc(title, gUserCurrLoc.lat, gUserCurrLoc.lng)
+    })
+    document.querySelector('.btn-user-pos').addEventListener('click', (ev) => {
+        getPosition()
+            .then(pos => {
+                console.log('User position is:', pos.coords);
+                document.querySelector('.user-pos').innerText =
+                    `Latitude: ${pos.coords.latitude} - Longitude: ${pos.coords.longitude}`;
+                mapService.panTo(pos.coords.latitude, pos.coords.longitude);
+            })
+            .catch(err => {
+                console.log('err!!!', err);
+            })
+    })
+
+}
 function onSearchAdress(map) {
     console.log('then geoCode');
     const geocoder = new google.maps.Geocoder();
@@ -55,31 +80,20 @@ function mapClickedEv(map) {
         console.log('gUserCurrLoc[lat]', gUserCurrLoc.lat, 'gUserCurrLoc[lng]', gUserCurrLoc.lng);
     });
 }
-// function onAddLoc(lat,lng,adress){
-//     locService.addLocation()
-// }
+function onRemoveLoc(ev){
+    locService.removeLoc(ev.target.getAttribute('data-i'))
+    locService.getLocs()
+        .then(locs => {
+            renderLocations(locs)
+        })
+}
 
-function addEventListenrs() {
-    document.querySelector('.btn-pan').addEventListener('click', (ev) => {
-        console.log('Panning the Map');
-        mapService.panTo(35.6798391, 139.7674084);
-    })
-    document.querySelector('.btn-add-marker').addEventListener('click', (ev) => {
-        console.log('Adding a marker');
-        mapService.addMarker({ lat: gUserCurrLoc.lat, lng: gUserCurrLoc.lng }, prompt('Enter place name'));
-    })
-    document.querySelector('.btn-user-pos').addEventListener('click', (ev) => {
-        getPosition()
-            .then(pos => {
-                console.log('User position is:', pos.coords);
-                document.querySelector('.user-pos').innerText =
-                    `Latitude: ${pos.coords.latitude} - Longitude: ${pos.coords.longitude}`;
-                mapService.panTo(pos.coords.latitude, pos.coords.longitude);
-            })
-            .catch(err => {
-                console.log('err!!!', err);
-            })
-    })
+function onAddLoc(name, lat, lng, weather, updatedAt) {
+    locService.addLocation(name, lat, lng, weather, updatedAt)
+    locService.getLocs()
+        .then(locs => {
+            renderLocations(locs)
+        })
 }
 function renderLocations(locs) {
     const strHtmls = locs.map(loc => {
@@ -87,12 +101,27 @@ function renderLocations(locs) {
         <td>${loc.name}</td>
         <td>${loc.weather}</td>
         <td>${loc.createdAt}</td>
-        <td><button class="btn-go" data-i="${loc.id}">Go</button></td>
-        <td><button class="btn-go" data-i="${loc.id}">✖</button></td>
+        <td><button class="btn-go" data-lat="${loc.lat}" data-lng="${loc.lng}">Go</button></td>
+        <td><button class="btn-remove" data-i="${loc.id}">✖</button></td>
       </tr>`
     })
-    console.log(strHtmls);
     document.querySelector('.locs').innerHTML = strHtmls.join('');
+    [...document.querySelectorAll('.btn-go')].forEach((item) => {
+        item.addEventListener('click', (ev) => {
+            onGoToLoc(ev);            
+        })
+    });
+
+    [...document.querySelectorAll('.btn-remove')].forEach((item) => {
+        item.addEventListener('click', (ev) => {
+            onRemoveLoc(ev);            
+        })
+    })
+}
+
+
+function onGoToLoc(ev) {
+    mapService.panTo(ev.target.getAttribute('data-lat'), ev.target.getAttribute('data-lng'));
 }
 
 // This function provides a Promise API to the callback-based-api of getCurrentPosition
