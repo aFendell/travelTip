@@ -2,20 +2,29 @@ import { locService } from './services/loc.service.js'
 import { mapService } from './services/map.service.js'
 
 window.onload = onInit;
+// var gMap;
 
 function onInit() {
     addEventListenrs();
     mapService.initMap()
-        .then(() => {
-            console.log('Map is ready');
+        .then((map) => {
+            mapClickedEv(map);
+            // gMap = map;
         })
-        .catch(() => console.log('Error: cannot init map'));
+        .catch(() => console.log('Error: cannot init map'))
 }
-
+function mapClickedEv(map){
+    map.addListener("click", (mapsMouseEvent) => {
+        console.log('Map is mapIsClicked');
+        var lat = mapsMouseEvent.latLng.lat();
+        var lng = mapsMouseEvent.latLng.lng();
+        console.log(lat, lng);
+    });
+}
 function addEventListenrs() {
     document.querySelector('.btn-pan').addEventListener('click', (ev) => {
         console.log('Panning the Map');
-        mapService.panTo(35.6895, 139.6917);
+        mapService.panTo(35.69103054930886, 139.77040508554606);
     })
     document.querySelector('.btn-add-marker').addEventListener('click', (ev) => {
         console.log('Adding a marker');
@@ -34,7 +43,8 @@ function addEventListenrs() {
             .then(pos => {
                 console.log('User position is:', pos.coords);
                 document.querySelector('.user-pos').innerText =
-                    `Latitude: ${pos.coords.latitude} - Longitude: ${pos.coords.longitude}`
+                    `Latitude: ${pos.coords.latitude} - Longitude: ${pos.coords.longitude}`;
+                mapService.panTo(pos.coords.latitude, pos.coords.longitude);
             })
             .catch(err => {
                 console.log('err!!!', err);

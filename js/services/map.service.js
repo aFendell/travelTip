@@ -3,7 +3,7 @@
 export const mapService = {
     initMap,
     addMarker,
-    panTo
+    panTo,
 }
 
 var gMap;
@@ -19,14 +19,15 @@ function initMap(lat = 32.0749831, lng = 34.9120554) {
                 zoom: 15
             })
             console.log('Map!', gMap);
+            return gMap;
         })
 }
 
-function addMarker(loc) {
+function addMarker(loc,city) {
     var marker = new google.maps.Marker({
         position: loc,
         map: gMap,
-        title: 'Hello World!'
+        title: city //need to be a parameter
     });
     return marker;
 }
@@ -34,6 +35,7 @@ function addMarker(loc) {
 function panTo(lat, lng) {
     var laLatLng = new google.maps.LatLng(lat, lng);
     gMap.panTo(laLatLng);
+    addMarker(laLatLng);
 }
 
 
