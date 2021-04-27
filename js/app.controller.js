@@ -7,6 +7,13 @@ var gUserCurrLoc = {
     lat: 0,
     lng: 0
 }
+
+var gSearchLoc = {
+    address,
+    lat: 0,
+    lng: 0
+}
+
 function onInit() {
     addEventListenrs();
     mapService.initMap()
@@ -23,7 +30,7 @@ function onInit() {
 }
 
 function onSearchAdress(map) {
-    console.log('then geoCode');
+    // console.log('then geoCode');
     const geocoder = new google.maps.Geocoder();
     document.querySelector(".submit-address").addEventListener("click", () => {
         geocodeAddress(geocoder, map);
@@ -35,6 +42,11 @@ function geocodeAddress(geocoder, resultsMap) {
     geocoder.geocode({ address: address }, (results, status) => {
         if (status === "OK") {
             resultsMap.setCenter(results[0].geometry.location);
+
+            gSearchLoc.address = address
+            gSearchLoc.lat = results[0].geometry.location.lat()
+            gSearchLoc.lng = results[0].geometry.location.lng()
+            
             new google.maps.Marker({
                 map: resultsMap,
                 position: results[0].geometry.location,
@@ -42,7 +54,7 @@ function geocodeAddress(geocoder, resultsMap) {
         } else {
             alert("Geocode was not successful for the following reason: " + status);
         }
-        // onAddLoc(lat,lng,adress)
+
     });
 }
 
@@ -52,12 +64,8 @@ function mapClickedEv(map) {
         var longtitude = mapsMouseEvent.latLng.lng();
         gUserCurrLoc.lat = latitude;
         gUserCurrLoc.lng = longtitude;
-        console.log('gUserCurrLoc[lat]', gUserCurrLoc.lat, 'gUserCurrLoc[lng]', gUserCurrLoc.lng);
     });
 }
-// function onAddLoc(lat,lng,adress){
-//     locService.addLocation()
-// }
 
 function addEventListenrs() {
     document.querySelector('.btn-pan').addEventListener('click', (ev) => {
@@ -91,7 +99,6 @@ function renderLocations(locs) {
         <td><button class="btn-go" data-i="${loc.id}">✖</button></td>
       </tr>`
     })
-    console.log(strHtmls);
     document.querySelector('.locs').innerHTML = strHtmls.join('');
 }
 
