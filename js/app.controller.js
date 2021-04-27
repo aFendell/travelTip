@@ -13,6 +13,7 @@ function onInit() {
         .then((map) => {
             mapClickedEv(map);
             // gMap = map;
+            onSearchAdress(map)
         })
         .catch(() => console.log('Error: cannot init map'));
     locService.getLocs()
@@ -20,6 +21,30 @@ function onInit() {
             renderLocations(locs)
         })
 }
+
+function onSearchAdress(map) {
+    console.log('then geoCode');
+    const geocoder = new google.maps.Geocoder();
+    document.querySelector(".submit-address").addEventListener("click", () => {
+        geocodeAddress(geocoder, map);
+    });
+}
+
+function geocodeAddress(geocoder, resultsMap) {
+    const address = document.querySelector(".input-address").value;
+    geocoder.geocode({ address: address }, (results, status) => {
+        if (status === "OK") {
+            resultsMap.setCenter(results[0].geometry.location);
+            new google.maps.Marker({
+                map: resultsMap,
+                position: results[0].geometry.location,
+            });
+        } else {
+            alert("Geocode was not successful for the following reason: " + status);
+        }
+    });
+}
+
 function mapClickedEv(map) {
     map.addListener("click", (mapsMouseEvent) => {
         var latitude = mapsMouseEvent.latLng.lat();
@@ -29,6 +54,7 @@ function mapClickedEv(map) {
         console.log('gUserCurrLoc[lat]', gUserCurrLoc.lat, 'gUserCurrLoc[lng]', gUserCurrLoc.lng);
     });
 }
+
 function addEventListenrs() {
     document.querySelector('.btn-pan').addEventListener('click', (ev) => {
         console.log('Panning the Map');
@@ -38,10 +64,6 @@ function addEventListenrs() {
         console.log('Adding a marker');
         mapService.addMarker({ lat: gUserCurrLoc.lat, lng: gUserCurrLoc.lng }, prompt('Enter place name'));
     })
-    // document.querySelector('.btn-get-locs').addEventListener('click', (ev) => {
-
-
-    // })
     document.querySelector('.btn-user-pos').addEventListener('click', (ev) => {
         getPosition()
             .then(pos => {
