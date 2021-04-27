@@ -10,10 +10,36 @@ function onInit() {
         .then((map) => {
             mapClickedEv(map);
             // gMap = map;
+            onSearchAdress(map)
         })
+
         .catch(() => console.log('Error: cannot init map'))
 }
-function mapClickedEv(map){
+
+function onSearchAdress(map){
+    console.log('then geoCode');
+    const geocoder = new google.maps.Geocoder();
+    document.querySelector(".submit-address").addEventListener("click", () => {
+        geocodeAddress(geocoder, map);
+    });
+}
+
+function geocodeAddress(geocoder, resultsMap) {
+    const address = document.querySelector(".input-address").value;
+    geocoder.geocode({ address: address }, (results, status) => {
+        if (status === "OK") {
+            resultsMap.setCenter(results[0].geometry.location);
+            new google.maps.Marker({
+                map: resultsMap,
+                position: results[0].geometry.location,
+            });
+        } else {
+            alert("Geocode was not successful for the following reason: " + status);
+        }
+    });
+}
+
+function mapClickedEv(map) {
     map.addListener("click", (mapsMouseEvent) => {
         console.log('Map is mapIsClicked');
         var lat = mapsMouseEvent.latLng.lat();
@@ -21,6 +47,7 @@ function mapClickedEv(map){
         console.log(lat, lng);
     });
 }
+
 function addEventListenrs() {
     document.querySelector('.btn-pan').addEventListener('click', (ev) => {
         console.log('Panning the Map');

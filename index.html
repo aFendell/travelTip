@@ -6,11 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/main.css">
     <title>TravelTip - Asaf & Daniel</title>
+    <!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script> -->
 </head>
 
 <body>
     <main>
-        <h1>TravelTip for Mummies</h1>
+        <h1>TravelTip</h1>
         <section class="search-container">
             <p>Location: <span class="user-pos"></span></p>
             <div class="location-menu">
@@ -18,12 +19,16 @@
                 <button class="btn-user-pos">Get User Position</button>
                 <button class="btn-get-locs">Get Locations</button>
                 <button class="btn-pan">Pan Map to Tokyo</button>
+                <div id="floating-panel">
+                    <input class="input-address" id="address" type="textbox" placeholder="Enter Location" />
+                    <input class="submit-address" id="submit" type="button" value="Go" />
+                </div>
             </div>
         </section>
 
         <section class="locations-container">
             <div class="loctions-info">
-                <div class="weather-container">Radio bla-bla</div>
+                <div class="weather-container">Weather Container</div>
                 <div class="locations-table">
                     <p>Locations: <span class="locs">Locations table</span></p>
                 </div>
@@ -34,7 +39,6 @@
         </section>
 
     </main>
-
     <script type="module" src="js/app.controller.js"></script>
 </body>
 

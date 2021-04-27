@@ -20,4 +20,3 @@ function removeLoc(id){
 function goToLoc(id){
 
 }
-
