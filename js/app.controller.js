@@ -27,7 +27,6 @@ function addEventListenrs() {
                 console.log('Locations:', locs)
                 document.querySelector('.locs').innerText = JSON.stringify(locs)
             })
-
     })
     document.querySelector('.btn-user-pos').addEventListener('click', (ev) => {
         getPosition()
